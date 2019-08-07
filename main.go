@@ -24,7 +24,6 @@ import (
 var (
 	cfg = struct {
 		DataDir        string `flag:"data-dir" default:"./data/" description:"Directory to store data to"`
-		EnableGit      bool   `flag:"enable-git" default:"false" description:"Enable git management of the data dir"`
 		Listen         string `flag:"listen" default:":3000" description:"Port/IP to listen on"`
 		LogLevel       string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
 		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
@@ -142,8 +141,5 @@ func handlePageWrite(w http.ResponseWriter, r *http.Request) {
 }
 
 func sanitizeFilename(page string) string {
-	return path.Join(
-		cfg.DataDir,
-		strings.Join([]string{slug.Make(page), "md"}, "."),
-	)
+	return strings.Join([]string{slug.Make(page), "md"}, ".")
 }

@@ -11,5 +11,6 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rainycape/unidecode v0.0.0-20150907023854-cb7f23ec59be // indirect
 	github.com/sirupsen/logrus v1.4.2
+	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.2.2
 )
