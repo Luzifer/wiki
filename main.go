@@ -1,6 +1,6 @@
 package main
 
-//go:generate go-bindata -pkg $GOPACKAGE -o assets.go -modtime 1 -md5checksum ./frontend/...
+//go:generate go-bindata -pkg $GOPACKAGE -o assets.go -modtime 1 -md5checksum ./frontend/... home.md
 
 import (
 	"bytes"
@@ -104,8 +104,13 @@ func handlePageRead(w http.ResponseWriter, r *http.Request) {
 		// All okay, render follows
 
 	case errFileNotFound:
-		http.Error(w, "Page not yet exists", http.StatusNotFound)
-		return
+		if sanitizeFilename(vars["page"]) != "home.md" {
+			http.Error(w, "Page not yet exists", http.StatusNotFound)
+			return
+		}
+
+		// Deliver initial "Home" page
+		file = &storedFile{Content: string(MustAsset("home.md"))}
 
 	default:
 		http.Error(w, err.Error(), http.StatusInternalServerError)
