@@ -27,7 +27,7 @@
     "webpack-dev-middleware": "^1.4.0",
     "webpack-hot-middleware": "^2.9.1"
   },
-  "name": "ots",
+  "name": "wiki",
   "private": true,
   "scripts": {
     "build": "webpack -p"
