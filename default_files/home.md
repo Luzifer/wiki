@@ -6,4 +6,6 @@ You've successfully started the software and entered the frontend. Now you can e
 
 When editing you can use [Markdown](https://en.wikipedia.org/wiki/Markdown) to style your contents. If you are familiar with it you should find everything as you are used to with one exception: Inside this Wiki you can link any [[Page]] using double brackets. Those will automatically get rewritten into internal links which have slightly different loading behaviour than external links. But even creating those will work just fine.
 
+To add links to the top navigation you can just edit the [[Navigation]] page and add them there. (Afterwards you need to reload once to refresh the navigation.)
+
 In case you experience trouble, have feature requests or feedback just visit the [Issue-Tracker](https://github.com/Luzifer/wiki/issues) on Github or take a look at the [Code](https://github.com/Luzifer/wiki).
