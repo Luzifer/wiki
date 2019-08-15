@@ -79,7 +79,7 @@ export default {
 
     prerender(mdtext) {
       // replace [[Internal]] links
-      mdtext = mdtext.replace(/\[\[([^\]]+)\]\]/, '<a class="intLink" data-page="$1" href="$1">$1</a>')
+      mdtext = mdtext.replace(new RegExp(/\[\[([^\]]+)\]\]/, 'g'), '<a class="intLink" data-page="$1" href="$1">$1</a>')
 
       return mdtext
     },
