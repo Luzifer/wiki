@@ -1,3 +1,9 @@
+# 0.2.1 / 2020-07-31
+
+  * Fix missing entry for Windows compile
+  * Generate: Update bundled JS
+  * npm update & audit fix & dedupe
+
 # 0.2.0 / 2019-08-15
 
   * Add top navigation
