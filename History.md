@@ -1,3 +1,7 @@
+# 0.3.0 / 2020-08-04
+
+  * Add support for custom author configuration through auth proxy
+
 # 0.2.1 / 2020-07-31
 
   * Fix missing entry for Windows compile
