@@ -23,10 +23,12 @@ import (
 
 var (
 	cfg = struct {
-		DataDir        string `flag:"data-dir" default:"./data/" description:"Directory to store data to"`
-		Listen         string `flag:"listen" default:":3000" description:"Port/IP to listen on"`
-		LogLevel       string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
-		VersionAndExit bool   `flag:"version" default:"false" description:"Prints current version and exits"`
+		AuthorNameHeader  string `flag:"author-name-header" default:"" description:"Header to use as Author name"`
+		AuthorEmailHeader string `flag:"author-email-header" default:"" description:"Header to use as Author email"`
+		DataDir           string `flag:"data-dir" default:"./data/" description:"Directory to store data to"`
+		Listen            string `flag:"listen" default:":3000" description:"Port/IP to listen on"`
+		LogLevel          string `flag:"log-level" default:"info" description:"Log level (debug, info, warn, error, fatal)"`
+		VersionAndExit    bool   `flag:"version" default:"false" description:"Prints current version and exits"`
 	}{}
 
 	version = "dev"
@@ -136,6 +138,14 @@ func handlePageWrite(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(file); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	if cfg.AuthorNameHeader != "" {
+		file.AuthorName = r.Header.Get(cfg.AuthorNameHeader)
+	}
+
+	if cfg.AuthorEmailHeader != "" {
+		file.AuthorEmail = r.Header.Get(cfg.AuthorEmailHeader)
 	}
 
 	if err := file.Save(sanitizeFilename(vars["page"])); err != nil {

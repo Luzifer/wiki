@@ -17,10 +17,12 @@ The software itself has no concept of users or authentication and is held as sim
 ```console
 # wiki --help
 Usage of wiki:
-      --data-dir string    Directory to store data to (default "./data/")
-      --listen string      Port/IP to listen on (default ":3000")
-      --log-level string   Log level (debug, info, warn, error, fatal) (default "info")
-      --version            Prints current version and exits
+      --author-email-header string   Header to use as Author email
+      --author-name-header string    Header to use as Author name
+      --data-dir string              Directory to store data to (default "./data/")
+      --listen string                Port/IP to listen on (default ":3000")
+      --log-level string             Log level (debug, info, warn, error, fatal) (default "info")
+      --version                      Prints current version and exits
 ```
 
 To use this you can
@@ -29,3 +31,7 @@ To use this you can
 - or `go get -u github.com/Luzifer/wiki` the project
 
 Given you've used the binary you can now just execute `./wiki` and go to `http://localhost:3000`. Everything you save will be stored in the `./data` directory.
+
+## Setting the author name of the commit
+
+If you've put the wiki behind an auth-proxy which is able to set headers containing the username / email of the authenticated user (for example nginx with [nginx-sso](https://github.com/Luzifer/nginx-sso)) you can specify the `--author-email-header` and/or `--author-name-header` and provide the header names you've used there. These values will then be used as the author of the commit while the committer will still be the wiki-user.

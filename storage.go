@@ -22,6 +22,9 @@ var errFileNotFound = errors.New("Specified file was not found")
 type storedFile struct {
 	Meta    map[string]interface{} `json:"meta"`
 	Content string                 `json:"content"`
+
+	AuthorName  string `json:"-"`
+	AuthorEmail string `json:"-"`
 }
 
 func loadStoredFile(filename string) (*storedFile, error) {
@@ -120,12 +123,26 @@ func (s storedFile) Save(filename string) error {
 		return errors.Wrap(err, "Unable to add file to index")
 	}
 
-	_, err = wt.Commit("Web-Update of "+filename, &git.CommitOptions{Author: s.authorSignature()})
+	_, err = wt.Commit("Web-Update of "+filename, &git.CommitOptions{Author: s.authorSignature(), Committer: s.committerSignature()})
 	return errors.Wrap(err, "Unable to commit file change")
 }
 
 func (s storedFile) authorSignature() *object.Signature {
-	return &object.Signature{Name: "wiki " + version, Email: "wiki@luzifer.io", When: time.Now()}
+	sig := &object.Signature{Name: "Web-User", Email: "wiki+author@luzifer.io", When: time.Now()}
+
+	if s.AuthorName != "" {
+		sig.Name = s.AuthorName
+	}
+
+	if s.AuthorEmail != "" {
+		sig.Email = s.AuthorEmail
+	}
+
+	return sig
+}
+
+func (s storedFile) committerSignature() *object.Signature {
+	return &object.Signature{Name: "wiki " + version, Email: "wiki+committer@luzifer.io", When: time.Now()}
 }
 
 func (s storedFile) initRepo() (*git.Repository, error) {
@@ -145,7 +162,7 @@ func (s storedFile) initRepo() (*git.Repository, error) {
 		return nil, errors.Wrap(err, "Unable to get worktree")
 	}
 
-	_, err = wt.Commit("Initial commit", &git.CommitOptions{Author: s.authorSignature()})
+	_, err = wt.Commit("Initial commit", &git.CommitOptions{Author: s.authorSignature(), Committer: s.committerSignature()})
 
 	return repo, errors.Wrap(err, "Unable to create initial commit")
 }
