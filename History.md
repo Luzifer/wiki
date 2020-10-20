@@ -1,3 +1,7 @@
+# 0.3.1 / 2020-10-20
+
+  * Fix: Update node deps
+
 # 0.3.0 / 2020-08-04
 
   * Add support for custom author configuration through auth proxy
