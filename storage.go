@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"time"
 
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/pkg/errors"
-	"gopkg.in/src-d/go-git.v4"
-	"gopkg.in/src-d/go-git.v4/config"
-	"gopkg.in/src-d/go-git.v4/plumbing/object"
-	"gopkg.in/yaml.v2"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 )
 
 const yamlDelimiter = `---`
@@ -20,8 +20,8 @@ const yamlDelimiter = `---`
 var errFileNotFound = errors.New("Specified file was not found")
 
 type storedFile struct {
-	Meta    map[string]interface{} `json:"meta"`
-	Content string                 `json:"content"`
+	Meta    map[string]any `json:"meta"`
+	Content string         `json:"content"`
 
 	AuthorName  string `json:"-"`
 	AuthorEmail string `json:"-"`
@@ -32,7 +32,7 @@ func loadStoredFile(filename string) (*storedFile, error) {
 		return nil, errFileNotFound
 	}
 
-	content, err := ioutil.ReadFile(path.Join(cfg.DataDir, filename))
+	content, err := os.ReadFile(path.Join(cfg.DataDir, filename)) //#nosec:G304 // Reading data file
 	if err != nil {
 		return nil, errors.Wrap(err, "Unable to read file")
 	}
@@ -103,11 +103,15 @@ func (s storedFile) Save(filename string) error {
 		return errors.Wrap(err, "Unable to get worktree")
 	}
 
-	f, err := os.Create(path.Join(cfg.DataDir, filename))
+	f, err := os.Create(path.Join(cfg.DataDir, filename)) //#nosec:G304 // Creating data file
 	if err != nil {
 		return errors.Wrap(err, "Unable to create file")
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			logrus.WithError(err).Error("closing data file (leaked fd)")
+		}
+	}()
 
 	if len(s.Meta) > 0 {
 		fmt.Fprintln(f, yamlDelimiter)
@@ -141,7 +145,7 @@ func (s storedFile) authorSignature() *object.Signature {
 	return sig
 }
 
-func (s storedFile) committerSignature() *object.Signature {
+func (storedFile) committerSignature() *object.Signature {
 	return &object.Signature{Name: "wiki " + version, Email: "wiki+committer@luzifer.io", When: time.Now()}
 }
 

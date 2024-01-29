@@ -1,6 +1,11 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
 func TestStoredFileParse(t *testing.T) {
 	var (
@@ -22,32 +27,18 @@ content
 `
 
 	sFile, err = storedFileFromString(file)
-	if err != nil {
-		t.Fatalf("Parsing of proper file errored: %s", err)
-	}
+	require.NoError(t, err)
 
-	if sFile.Content != "# Header\n\ncontent" {
-		t.Errorf("Content did not match expectation: %q", sFile.Content)
-	}
-
-	if len(sFile.Meta) != 1 || sFile.GetMetaString("key") != "value" {
-		t.Errorf("Metadata did not match expectation: %#v", sFile.Meta)
-	}
+	assert.Equal(t, "# Header\n\ncontent", sFile.Content)
+	assert.Equal(t, map[string]any{"key": "value"}, sFile.Meta)
 
 	// Case: No header
 
 	file = "# Header\n\ncontent"
 
 	sFile, err = storedFileFromString(file)
-	if err != nil {
-		t.Fatalf("Parsing of proper file errored: %s", err)
-	}
+	require.NoError(t, err)
 
-	if sFile.Content != "# Header\n\ncontent" {
-		t.Errorf("Content did not match expectation: %q", sFile.Content)
-	}
-
-	if len(sFile.Meta) != 0 {
-		t.Errorf("Metadata did not match expectation: %#v", sFile.Meta)
-	}
+	assert.Equal(t, "# Header\n\ncontent", sFile.Content)
+	assert.Len(t, sFile.Meta, 0)
 }
