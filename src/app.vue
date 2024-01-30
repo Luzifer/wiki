@@ -1,76 +1,76 @@
 <template>
   <div>
-    <b-navbar
-      type="dark"
-      variant="primary"
-      class="mb-4"
-    >
-      <b-navbar-brand
-        href="/"
-        @click.prevent="$router.push({ name: 'home' })"
-      >
-        Wiki
-      </b-navbar-brand>
-
-      <b-navbar-nav>
-        <b-nav-item
-          v-for="page in navContent"
-          :key="page"
-          :to="{ name: 'view', params: { page } }"
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+      <div class="container-fluid">
+        <router-link
+          class="navbar-brand"
+          :to="{ name: 'home' }"
         >
-          {{ page }}
-        </b-nav-item>
-      </b-navbar-nav>
-
-      <template ref="nav">
-        <vue-markdown
-          class="nav"
-          :source="navContent"
-          :prerender="prerender"
-          @rendered="rendered"
-        />
-      </template>
-    </b-navbar>
+          Wiki
+        </router-link>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon" />
+        </button>
+        <div
+          id="navbarSupportedContent"
+          class="collapse navbar-collapse"
+        >
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li
+              v-for="page in navContent"
+              :key="page"
+              class="nav-item"
+            >
+              <router-link
+                class="nav-link"
+                :to="{ name: 'view', params: { page } }"
+              >
+                {{ page }}
+              </router-link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
     <router-view />
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-import VueMarkdown from 'vue-markdown'
-
 export default {
-  name: 'App',
-
-  components: {
-    VueMarkdown,
-  },
-
   data() {
     return {
       navContent: '',
     }
   },
 
-  mounted() {
-    this.loadNav()
-  },
-
   methods: {
     loadNav() {
-      axios.get(`/_content/_navigation`)
-        .then(resp => {
-          this.navContent = resp.data.content.split('\n')
-            .filter(el => !el.match(/^!/))
+      return fetch(`/_content/_navigation`)
+        .then(resp => resp.json())
+        .then(data => {
+          this.navContent = data.content.split('\n')
+            .filter(el => el && !el.match(/^!/))
         })
         .catch(err => {
-          if (err.response && err.response.status === 404) {
-            return
-          }
           console.error(err)
         })
     },
   },
+
+  mounted() {
+    this.loadNav()
+  },
+
+  name: 'WikiApp',
 }
 </script>

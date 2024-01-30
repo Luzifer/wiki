@@ -88,7 +88,7 @@ func main() {
 }
 
 func handleIndexPage(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/app.js" {
+	if r.URL.Path != "/app.js" && r.URL.Path != "/app.css" {
 		r.URL.Path = "/index.html"
 	}
 

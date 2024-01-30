@@ -1,0 +1,19 @@
+{
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.23.3",
+    "esbuild": "^0.19.11",
+    "esbuild-plugin-vue3": "^0.4.0",
+    "esbuild-sass-plugin": "^2.16.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-vue": "^9.20.1"
+  },
+  "name": "wiki",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^5.3.2",
+    "easymde": "^2.18.0",
+    "showdown": "^2.1.0",
+    "vue": "^3.4.14",
+    "vue-router": "^4.2.5"
+  }
+}

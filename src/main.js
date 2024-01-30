@@ -1,19 +1,13 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-
-import BootstrapVue from 'bootstrap-vue'
-
 import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import 'bootswatch/dist/darkly/bootstrap.css'
 import 'easymde/dist/easymde.min.css'
+import './easymde.css'
+
+import { createApp, h } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './app.vue'
-import View from './view.vue'
 import Edit from './edit.vue'
-
-Vue.use(BootstrapVue)
-Vue.use(VueRouter)
+import View from './view.vue'
 
 const routes = [
   {
@@ -33,15 +27,20 @@ const routes = [
   },
 ]
 
-const router = new VueRouter({
+const router = createRouter({
+  history: createWebHistory(),
   mode: 'history',
   routes,
 })
 
-new Vue({
-  el: '#app',
-  components: { App },
-  data: { },
-  render: createElement => createElement('app'),
+const app = createApp({
+  name: 'WikiMain',
+  render() {
+    return h(App)
+  },
+
   router,
 })
+
+app.use(router)
+app.mount('#app')

@@ -1,32 +1,83 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col>
+  <div class="container">
+    <div class="row">
+      <div class="col">
         <textarea ref="editor" />
 
-        <b-btn
-          variant="primary"
+        <button
+          class="btn btn-primary"
           @click="save"
         >
           Save
-        </b-btn>
-      </b-col>
-    </b-row>
-  </b-container>
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
 import EasyMDE from 'easymde'
 
 export default {
-  name: 'Edit',
-
   data() {
     return {
       editor: null,
     }
   },
+
+  methods: {
+    loadPage(pageName) {
+      console.debug(`Loading ${pageName}...`)
+      return fetch(`/_content/${pageName}`)
+        .then(resp => {
+          if (resp.status === 404) {
+            return { content: `# ${pageName}` }
+          }
+
+          return resp.json()
+        })
+        .then(data => {
+          if (this.editor) {
+            this.editor.toTextArea()
+            this.editor = null
+          }
+
+          this.editor = new EasyMDE({
+            element: this.$refs.editor,
+            forceSync: true,
+            indentWithTabs: false,
+            initialValue: data.content,
+          })
+
+          // this.editor.codemirror.setValue(data.content)
+        })
+        .catch(err => {
+          if (err.response && err.response.status === 404) {
+            return
+          }
+          console.error(err)
+        })
+    },
+
+    save() {
+      return fetch(`/_content/${this.$route.params.page}`, {
+        body: JSON.stringify({ content: this.$refs.editor.value }),
+        method: 'POST',
+      })
+        .then(() => {
+          this.$router.push({ name: 'view', params: { page: this.$route.params.page } })
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+  },
+
+  mounted() {
+    this.loadPage(this.$route.params.page)
+  },
+
+  name: 'WikiEdit',
 
   watch: {
     '$route'(to, from) {
@@ -37,53 +88,5 @@ export default {
       this.loadPage(to.params.page)
     },
   },
-
-  mounted() {
-    if (!this.editor) {
-      this.editor = new EasyMDE({
-        element: this.$refs.editor,
-        forceSync: true,
-        indentWithTabs: false,
-      })
-
-      window.editor = this.editor
-    }
-    this.loadPage(this.$route.params.page)
-  },
-
-  methods: {
-    loadPage(pageName) {
-      console.debug(`Loading ${pageName}...`)
-      axios.get(`/_content/${pageName}`)
-        .then(resp => {
-          this.editor.codemirror.setValue(resp.data.content)
-        })
-        .catch(err => {
-          if (err.response && err.response.status === 404) {
-            return
-          }
-          console.error(err)
-          // FIXME: Show error
-        })
-    },
-
-    save() {
-      axios.post(`/_content/${this.$route.params.page}`, {
-        content: this.$refs.editor.value,
-      })
-        .then(() => {
-          this.$router.push({ name: 'view', params: { page: this.$route.params.page } })
-        })
-        .catch(err => {
-          console.error(err)
-        })
-    },
-  },
 }
 </script>
-
-<style>
-.editor-toolbar {
-  background-color: #ccc;
-}
-</style>

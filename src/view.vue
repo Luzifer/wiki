@@ -1,57 +1,43 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col
+  <div class="container">
+    <div class="row">
+      <div
         ref="content"
-        class="relAnchor"
+        class="col relAnchor"
       >
-        <b-btn
-          class="editBtn"
-          variant="secondary"
-          size="sm"
+        <router-link
+          v-if="$route.params.page"
+          class="btn btn-secondary btn-sm editBtn"
           :to="{ name: 'edit', params: { page: $route.params.page } }"
         >
           <i class="fas fa-edit" />
-        </b-btn>
-        <vue-markdown
-          :source="content"
+        </router-link>
+
+        <md-render
+          :content="content"
           :prerender="prerender"
           @rendered="rendered"
         />
-      </b-col>
-    </b-row>
-  </b-container>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
-import VueMarkdown from 'vue-markdown'
+/* global Prism */
+
+import mdRender from './markdown.vue'
 
 export default {
-  name: 'View',
 
   components: {
-    VueMarkdown,
+    mdRender,
   },
 
   data() {
     return {
       content: '',
     }
-  },
-
-  watch: {
-    '$route'(to, from) {
-      if (to.params.page === from.params.page) {
-        return
-      }
-
-      this.loadPage(to.params.page)
-    },
-  },
-
-  mounted() {
-    this.loadPage(this.$route.params.page)
   },
 
   methods: {
@@ -63,23 +49,33 @@ export default {
 
     loadPage(pageName) {
       console.debug(`Loading ${pageName}...`)
-      axios.get(`/_content/${pageName}`)
+      return fetch(`/_content/${pageName}`)
         .then(resp => {
-          this.content = resp.data.content
-        })
-        .catch(err => {
-          if (err.response && err.response.status === 404) {
+          if (resp.status === 404) {
             this.$router.push({ name: 'edit', params: { page: pageName } })
             return
           }
+
+          return resp.json()
+        })
+        .then(data => {
+          if (!data) {
+            return
+          }
+
+          this.content = data.content
+        })
+        .catch(err => {
           console.error(err)
-          // FIXME: Show error
         })
     },
 
     prerender(mdtext) {
       // replace [[Internal]] links
-      mdtext = mdtext.replace(new RegExp(/\[\[([^\]]+)\]\]/, 'g'), '<a class="intLink" data-page="$1" href="$1">$1</a>')
+      mdtext = mdtext.replace(
+        new RegExp(/\[\[([^\]]+)\]\]/, 'g'),
+        '<a class="intLink" data-page="$1" href="$1">$1</a>',
+      )
 
       return mdtext
     },
@@ -96,6 +92,22 @@ export default {
         // Highlight code blocks
         Prism.highlightAll()
       }, 100)
+    },
+  },
+
+  mounted() {
+    this.loadPage(this.$route.params.page)
+  },
+
+  name: 'WikiView',
+
+  watch: {
+    '$route'(to, from) {
+      if (to.params.page === from.params.page) {
+        return
+      }
+
+      this.loadPage(to.params.page)
     },
   },
 }
