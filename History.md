@@ -1,3 +1,11 @@
+# 0.4.0 / 2024-01-30
+
+  * Port frontend to Vue 3 / Bootstrap 5.3
+  * Use Github Flavoured Markdown
+  * CI: Replace old build-system
+  * Update dependencies, modernize code
+  * Slight improvements in Dockerfile
+
 # 0.3.1 / 2020-10-20
 
   * Fix: Update node deps
