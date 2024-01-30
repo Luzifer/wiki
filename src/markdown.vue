@@ -6,6 +6,17 @@
 <script>
 import showdown from 'showdown'
 
+const classMap = {
+  table: 'table',
+}
+
+const htmlClassBindings = Object.keys(classMap)
+  .map(key => ({
+    regex: new RegExp(`<${key}(.*)>`, 'g'),
+    replace: `<${key} class="${classMap[key]}" $1>`,
+    type: 'output',
+  }))
+
 export default {
   data() {
     return {
@@ -37,6 +48,7 @@ export default {
       }
 
       const converter = new showdown.Converter({
+        extensions: [...htmlClassBindings],
         tables: true,
       })
       converter.setFlavor('github')
