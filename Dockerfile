@@ -1,12 +1,10 @@
 FROM golang:alpine as builder
 
-ENV GO111MODULE=on
-
 COPY . /go/src/github.com/Luzifer/wiki
 WORKDIR /go/src/github.com/Luzifer/wiki
 
 RUN set -ex \
- && apk add --update \
+ && apk --no-cache add \
       curl \
       git \
  && go build \
@@ -20,6 +18,7 @@ RUN set -ex \
  && chmod +x \
       /usr/local/bin/dumb-init \
       /usr/local/bin/gosu
+
 
 FROM alpine:latest
 
