@@ -36,7 +36,10 @@ export default {
         content = this.prerender(content)
       }
 
-      const converter = new showdown.Converter()
+      const converter = new showdown.Converter({
+        tables: true,
+      })
+      converter.setFlavor('github')
       this.render = converter.makeHtml(content)
       this.$emit('rendered')
     },
