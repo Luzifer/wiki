@@ -7,6 +7,7 @@
 import showdown from 'showdown'
 
 const classMap = {
+  blockquote: 'blockquote',
   table: 'table',
 }
 
@@ -58,3 +59,12 @@ export default {
   },
 }
 </script>
+
+<style>
+.blockquote {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border-left: 3px solid rgb(var(--bs-secondary-bg-rgb));
+  padding-left: 0.5rem;
+}
+</style>
