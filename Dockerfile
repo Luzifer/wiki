@@ -7,6 +7,10 @@ RUN set -ex \
  && apk --no-cache add \
       curl \
       git \
+      make \
+      nodejs \
+      npm \
+ && make frontend \
  && go build \
       -ldflags "-X main.version=$(git describe --tags --always || echo dev)" \
       -mod=readonly \

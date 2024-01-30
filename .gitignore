@@ -1,3 +1,5 @@
 data
+frontend/app.css
+frontend/app.js
 node_modules
 wiki

@@ -1,8 +1,18 @@
-default: generate
+VERSION := $(shell git describe --tags --always || echo dev)
 
-generate:
-	docker run --rm -ti -v $(CURDIR):$(CURDIR) -w $(CURDIR)/src node:alpine \
-		sh -exc "npm ci && node ci/build.mjs && chown -R $(shell id -u) ../frontend node_modules"
+default: build
 
-publish:
+build: frontend
+	go build \
+		-ldflags "-s -w -X main.version=$(version)" \
+		-mod=readonly \
+		-trimpath
+
+frontend: node_modules
+	node ci/build.mjs
+
+node_modules:
+	npm ci
+
+publish: frontend
 	bash ./ci/build.sh
