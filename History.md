@@ -1,3 +1,7 @@
+# 0.4.1 / 2024-04-19
+
+  * Update dependencies
+
 # 0.4.0 / 2024-01-30
 
   * Port frontend to Vue 3 / Bootstrap 5.3
